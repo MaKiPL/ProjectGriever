@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// All rights reserved. Marcin 'Maki' Gomulak. marcingomulak@gmail.com
 
 #pragma once
 
@@ -31,4 +31,8 @@ private:
 		PREFIX_MAP(UMaterial, "M")
 		PREFIX_MAP(UMaterialInstance, "MI")
         };
+
+public:
+	UFUNCTION(CallInEditor)
+	static void UpdateTextureInformation();
 };

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// All rights reserved. Marcin 'Maki' Gomulak. marcingomulak@gmail.com
 
 
 #include "Editor/PGAssetUtilsActions.h"
@@ -27,5 +27,20 @@ void UPGAssetUtilsActions::AddAssetPrefixes()
 			FString NewObjectName = FString::Printf(TEXT("%s_%s"), **FoundPrefix, *ObjectName);
 			UEditorUtilityLibrary::RenameAsset(Asset, NewObjectName);
 		}
+	}
+}
+
+void UPGAssetUtilsActions::UpdateTextureInformation()
+{
+	TArray<UObject*> SelectedAssets = UEditorUtilityLibrary::GetSelectedAssetsOfClass(UTexture2D::StaticClass());
+	for (UObject* Asset : SelectedAssets)
+	{
+		UTexture2D* Texture = Cast<UTexture2D>(Asset);
+        if (!Texture)
+	        continue;
+		Texture->MipGenSettings = TMGS_FromTextureGroup;
+		Texture->Filter = TF_Nearest;
+		Texture->UpdateResource();
+		Texture->PostEditChange();
 	}
 }
