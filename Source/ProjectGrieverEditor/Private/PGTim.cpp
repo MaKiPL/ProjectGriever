@@ -89,9 +89,9 @@ UTexture2D* FPGTim::CreateClutPaletteTexture(UObject* InParent, const FString& I
 			//UINT PackedColor = ClutColors[Index].ToPackedBGRA(); // You can change this to other color format if needed
 			//ClutRGBAData.Add(ClutColors[Index].ToPackedBGRA());
 			FColor RGBA = ClutColors[Index];
-			ClutRGBAData.Add(RGBA.R);
-			ClutRGBAData.Add(RGBA.G);
 			ClutRGBAData.Add(RGBA.B);
+			ClutRGBAData.Add(RGBA.G);
+			ClutRGBAData.Add(RGBA.R);
 			ClutRGBAData.Add(RGBA.A);
 		}
 	}
