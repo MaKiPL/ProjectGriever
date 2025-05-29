@@ -11,6 +11,11 @@
 			"AdditionalDependencies": [
 				"Blutility"
 			]
+		},
+		{
+			"Name": "ProjectGrieverEditor",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
