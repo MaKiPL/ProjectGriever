@@ -15,6 +15,8 @@ public:
 	UTexture2D* CreateClutPaletteTexture(UObject* InParent, const FString& InTextureName);
 	UTexture2D* CreateRawTextureGrayscale(UObject* InParent, const FString& InTextureName);
 
+	static void UpdateTextureParams(UTexture2D*& Texture);
+
 private:
 	int Mode = 0;
 	USHORT ClutSectionSize = 0;

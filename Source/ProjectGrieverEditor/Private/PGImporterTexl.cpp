@@ -52,29 +52,35 @@ UObject* UPGImporterTexl::FactoryCreateFile(UClass* InClass, UObject* InParent, 
 		FString BasePackageName = PackagePath / BaseTextureName;
 		FString PalettePackageName = PackagePath / PaletteTextureName;
         
+		const int TexturePointer = Index*Tex_Size;
+		FPGTim Tim(Buffer, TexturePointer);
+		
 		// Create package
 		UPackage* BasePackage = CreatePackage(*BasePackageName);
-		UPackage* PalettePackage = CreatePackage(*BasePackageName);
-		
-		const int TexturePointer = Index*Tex_Size;
-
-		FPGTim Tim(Buffer, TexturePointer);
+		BasePackage->FullyLoad();
 		UTexture2D* BaseTexture = Tim.CreateRawTextureGrayscale(BasePackage, BaseTextureName);
-		UTexture2D * PaletteTexture = Tim.CreateClutPaletteTexture(PalettePackage, PaletteTextureName);
-		
-		bool bDirty = BasePackage->MarkPackageDirty();
-		bDirty = PalettePackage->MarkPackageDirty();
-		
 		FString BasePackageFilename = FPackageName::LongPackageNameToFilename(BasePackageName, FPackageName::GetAssetPackageExtension());
-		FString PalettePackageFilename = FPackageName::LongPackageNameToFilename(PalettePackageName, FPackageName::GetAssetPackageExtension());
-        
+		bool bDirty = BasePackage->MarkPackageDirty();
 		FSavePackageArgs SaveArgs;
 		SaveArgs.TopLevelFlags = RF_Public | RF_Standalone;
 		UPackage::SavePackage(BasePackage, BaseTexture, *BasePackageName, SaveArgs);
-		UPackage::SavePackage(PalettePackage, PaletteTexture, *PalettePackageFilename, SaveArgs);
-		
 		FAssetRegistryModule::AssetCreated(BaseTexture);
+
+		// 
+		UPackage* PalettePackage = CreatePackage(*PalettePackageName);
+		PalettePackage->FullyLoad();
+		UTexture2D * PaletteTexture = Tim.CreateClutPaletteTexture(PalettePackage, PaletteTextureName);
+		FString PalettePackageFilename = FPackageName::LongPackageNameToFilename(PalettePackageName, FPackageName::GetAssetPackageExtension());
+		bDirty = PalettePackage->MarkPackageDirty();
+		UPackage::SavePackage(PalettePackage, PaletteTexture, *PalettePackageFilename, SaveArgs);
 		FAssetRegistryModule::AssetCreated(PaletteTexture);
+		
+		//Base texture needs to be non sRGB :shrug:
+		BaseTexture->SRGB = false;
+		
+		FPGTim::UpdateTextureParams(BaseTexture);
+		FPGTim::UpdateTextureParams(PaletteTexture);
+		
 
 		if (!MainTexture)
 			MainTexture = BaseTexture;

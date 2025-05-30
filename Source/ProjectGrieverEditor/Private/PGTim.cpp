@@ -150,6 +150,18 @@ UTexture2D* FPGTim::CreateRawTextureGrayscale(UObject* InParent, const FString& 
 	return Texture;
 }
 
+void FPGTim::UpdateTextureParams(UTexture2D*& Texture)
+{
+	Texture->PreEditChange(nullptr);
+	//So UE5 enforces a maximum compression for textures, but it's a problem for low-res, low-color textures.
+	//It's tricky to get the same look as in vanilla game, so let's make some trickery to make it working
+	Texture->MipGenSettings = TMGS_NoMipmaps; // No mipmaps
+	Texture->CompressionSettings = TC_VectorDisplacementmap; // Vector displacementmap-> this one is a game changer
+	Texture->Filter = TF_Nearest; 
+	Texture->MipLoadOptions = ETextureMipLoadOptions::OnlyFirstMip;
+	Texture->PostEditChange();
+}
+
 TArray<FColor> FPGTim::ReadClut(const uint8*& Buffer)
 {
 	TArray<FColor> ClutColors;
@@ -174,7 +186,7 @@ TArray<FColor> FPGTim::ReadClut(const uint8*& Buffer)
 
 FColor FPGTim::ReadPsxColor16(const uint8* Buffer)
 {
-	const USHORT PixelColor =  *reinterpret_cast<const USHORT*>(Buffer);
+	USHORT PixelColor =  *reinterpret_cast<const USHORT*>(Buffer);
 
 	BYTE R = static_cast<BYTE>((PixelColor & 0x1F) << 3);
 	BYTE G = static_cast<BYTE>((PixelColor >> 5 & 0x1F) << 3);
